@@ -8,8 +8,24 @@ using System.Windows.Shapes;
 
 namespace GameLab3
 {
+    public delegate void SceneEvent(object sender, CControllerEventArgs e);
+
+    public class CControllerEventArgs : EventArgs
+    {
+        public Ellipse sprite;
+        public string msg = "";
+
+        public CControllerEventArgs(Ellipse sprite)
+        {
+            this.sprite = sprite;
+        }
+    }
+
     public class CController
     {
+        public event SceneEvent addObject;
+        public event SceneEvent removeObject;
+
         private List<CCollectable> objects;
         private double spawnRate;
         private double time;
