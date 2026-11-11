@@ -20,10 +20,28 @@ namespace GameLab2
         }
     }
 
+    public delegate void EnemyEvent(object sender, CEnemyEventArgs e);
+
+    public class CEnemyEventArgs : EventArgs
+    {
+        public IEnemy enemy;
+
+        public CEnemyEventArgs(IEnemy enemy)
+        {
+            this.enemy = enemy;
+        }
+    }
+
     public class CController
     {
         public event SceneEvent addObject;
         public event SceneEvent removeObject;
+
+        public event EnemyEvent enemyChanged;
+        public event EnemyEvent enemyDamaged;
+
+        private IEnemy currentEnemy;
+        public IEnemy CurrentEnemy => currentEnemy;
 
         private List<CCollectable> objects;
         private double spawnRate;
