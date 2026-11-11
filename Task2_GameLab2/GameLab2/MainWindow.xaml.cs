@@ -81,6 +81,7 @@ namespace GameLab2
             controller.addObject += addObjectInScene;
             controller.removeObject += removeObjectFromScene;
             controller.enemyChanged += showEnemy;
+            controller.enemyDamaged += showEnemyDamage;
 
             SpawnNewEnemy();
 
@@ -137,6 +138,11 @@ namespace GameLab2
             }
         }
 
+        public void showEnemyDamage(object sender, CEnemyEventArgs e)
+        {
+            EnemyHitPoint.Text = e.enemy.CurrentHitPoints.ToString();
+        }
+
         private void Timer_Tick(object sender, EventArgs e)
         {
             controller.update(0.1);
@@ -157,8 +163,8 @@ namespace GameLab2
 
             BigNumber damage = _player.DealDamage();
 
-            // Наносим урон через полиморфную логику
-            enemy.TakeDamage(damage);
+            // Наносим урон через контроллер, он вызывает событие enemyDamaged
+            controller.damageEnemy(damage);
 
             if (enemy.IsDead)
             {
@@ -194,13 +200,11 @@ namespace GameLab2
 
         private void UpdateUI()
         {
-            if (_player == null || controller.CurrentEnemy == null) return;
+            if (_player == null) return;
 
             PlayerDamage.Text = _player.Damage.ToString();
             PlayerGold.Text = _player.Gold.ToString();
             PlayerLevel.Text = _player.Lvl.ToString();
-
-            EnemyHitPoint.Text = controller.CurrentEnemy.CurrentHitPoints.ToString();
             UpgradeCost.Text = _player.UpgradeCost.ToString();
             PlayerCD.Text = _player.timeBeforeClick.ToString();
         }

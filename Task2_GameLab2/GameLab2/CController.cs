@@ -49,6 +49,14 @@ namespace GameLab2
             enemyChanged?.Invoke(this, new CEnemyEventArgs(enemy));
         }
 
+        public void damageEnemy(BigNumber damage)
+        {
+            if (currentEnemy == null) return;
+
+            currentEnemy.TakeDamage(damage);
+            enemyDamaged?.Invoke(this, new CEnemyEventArgs(currentEnemy));
+        }
+
         private List<CCollectable> objects;
         private double spawnRate;
         private double time;
