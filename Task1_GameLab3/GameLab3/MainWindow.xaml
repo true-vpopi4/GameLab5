@@ -1,0 +1,32 @@
+﻿<Window x:Class="GameLab3.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GameLab3"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Background="#F0F0F0">
+            <Button x:Name="BtnStart" Content="Старт" Height="30" Margin="0,0,0,10" Click="BtnStart_Click"/>
+
+            <TextBlock Text="Счёт:" FontSize="14" FontWeight="Bold"/>
+            <TextBlock x:Name="TxtScore" Text="Score: 0" FontSize="16" Margin="0,0,0,20"/>
+
+            <TextBlock Text="Время:" FontSize="14" FontWeight="Bold"/>
+            <TextBlock x:Name="TxtTime" Text="Time: 0,0s" FontSize="16" Margin="0,0,0,20"/>
+
+            <TextBlock Text="Лог событий:" FontSize="12" Foreground="Gray"/>
+            <ListBox x:Name="LogList" Height="200" Background="White" FontSize="11"/>
+        </StackPanel>
+
+        <Border Grid.Column="1" BorderBrush="#CCCCCC" BorderThickness="1,0,0,0">
+            <Canvas x:Name="GameCanvas" Background="#F9F9F9" MouseDown="GameCanvas_MouseDown" ClipToBounds="True"/>
+        </Border>
+    </Grid>
+</Window>
