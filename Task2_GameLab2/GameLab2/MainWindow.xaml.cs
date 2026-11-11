@@ -74,22 +74,35 @@ namespace GameLab2
 
             _player.LoadLevelAndStats(savedData.Level);
 
+            Size sceneSize = new Size(GameCanvas.ActualWidth, GameCanvas.ActualHeight);
+            if (sceneSize.Width == 0 || sceneSize.Height == 0) sceneSize = new Size(600, 400);
+
+            controller = new CController(1.0, 0, sceneSize);
+
+            controller.addObject += addObjectInScene;
+            controller.removeObject += removeObjectFromScene;
+
             SpawnNewEnemy();
 
             timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             timer.Tick += Timer_Tick;
-
-            Size sceneSize = new Size(GameCanvas.ActualWidth, GameCanvas.ActualHeight);
-            if (sceneSize.Width == 0 || sceneSize.Height == 0) sceneSize = new Size(600, 400);
-
-            controller = new CController(1.0, 0, sceneSize);
             timer.Start();
+        }
+
+        public void addObjectInScene(object sender, CControllerEventArgs e)
+        {
+            GameCanvas.Children.Add(e.sprite);
+        }
+
+        public void removeObjectFromScene(object sender, CControllerEventArgs e)
+        {
+            GameCanvas.Children.Remove(e.sprite);
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            controller.update(0.1, GameCanvas);
+            controller.update(0.1);
             _player.update(0.1);
         }
 
@@ -195,7 +208,7 @@ namespace GameLab2
         private void GameCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Point mousePosition = e.GetPosition(GameCanvas);
-            controller.mouseClick(mousePosition, GameCanvas, _player);
+            controller.mouseClick(mousePosition, _player);
             UpdateUI();
         }
     }
