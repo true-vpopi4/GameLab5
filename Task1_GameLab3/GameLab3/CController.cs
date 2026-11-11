@@ -133,9 +133,14 @@ namespace GameLab3
         {
             for (int i = objects.Count - 1; i >= 0; i--)
             {
+                double oldPoints = points;
                 if (objects[i].onClick(player, this, mousePosition) == true)
                 {
-                    destroyObject(objects[i], "");
+                    string message = "";
+                    if (points > oldPoints)
+                        message = $"Получено очков: {points - oldPoints:F0}";
+
+                    destroyObject(objects[i], message);
                     break;
                 }
             }

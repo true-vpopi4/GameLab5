@@ -34,6 +34,7 @@ namespace GameLab3
 
             controller.addObject += addObjectInScene;
             controller.removeObject += removeObjectFromScene;
+            controller.removeObject += logMessage;
 
             timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
@@ -48,6 +49,12 @@ namespace GameLab3
         public void removeObjectFromScene(object sender, CControllerEventArgs e)
         {
             GameCanvas.Children.Remove(e.sprite);
+        }
+
+        public void logMessage(object sender, CControllerEventArgs e)
+        {
+            if (e.msg != "")
+                LogList.Items.Insert(0, e.msg);
         }
 
         private void Timer_Tick(object sender, EventArgs e)
