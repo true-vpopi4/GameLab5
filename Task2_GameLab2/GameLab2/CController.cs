@@ -43,6 +43,12 @@ namespace GameLab2
         private IEnemy currentEnemy;
         public IEnemy CurrentEnemy => currentEnemy;
 
+        public void setEnemy(IEnemy enemy)
+        {
+            currentEnemy = enemy;
+            enemyChanged?.Invoke(this, new CEnemyEventArgs(enemy));
+        }
+
         private List<CCollectable> objects;
         private double spawnRate;
         private double time;
