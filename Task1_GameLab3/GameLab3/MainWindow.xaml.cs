@@ -30,15 +30,29 @@ namespace GameLab3
             InitializeComponent();
 
             player = new CPlayer(1.5);
+            controller = new CController(1.0, 0, new Size(600, 400));
+
+            controller.addObject += addObjectInScene;
+            controller.removeObject += removeObjectFromScene;
 
             timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             timer.Tick += Timer_Tick;
         }
 
+        public void addObjectInScene(object sender, CControllerEventArgs e)
+        {
+            GameCanvas.Children.Add(e.sprite);
+        }
+
+        public void removeObjectFromScene(object sender, CControllerEventArgs e)
+        {
+            GameCanvas.Children.Remove(e.sprite);
+        }
+
         private void Timer_Tick(object sender, EventArgs e)
         {
-            controller.update(0.1, GameCanvas);
+            controller.update(0.1);
             player.update(0.1);
 
             gameTimeElapsed += 0.1;
@@ -49,8 +63,7 @@ namespace GameLab3
             if (gameTimeElapsed >= maxGameTime)
             {
                 timer.Stop();
-                GameCanvas.Children.Clear();
-                controller.Objects.Clear();
+                controller.clear();
                 MessageBox.Show($"Игра окончена! Вы набрали {controller.Points:F0} очков.", "Финиш");
                 BtnStart.IsEnabled = true; 
             }
@@ -64,7 +77,7 @@ namespace GameLab3
 
             double oldPoints = controller.Points;
 
-            controller.mouseClick(mousePosition, GameCanvas, player);
+            controller.mouseClick(mousePosition, player);
 
             if (controller.Points > oldPoints)
             {
@@ -74,7 +87,6 @@ namespace GameLab3
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
-            GameCanvas.Children.Clear();
             LogList.Items.Clear();
             gameTimeElapsed = 0;
 
@@ -85,7 +97,7 @@ namespace GameLab3
                 sceneSize = new Size(600, 400);
             }
 
-            controller = new CController(1.0, 0, sceneSize);
+            controller.restart(sceneSize);
 
             BtnStart.IsEnabled = false;
 

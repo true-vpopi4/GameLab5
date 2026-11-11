@@ -80,36 +80,62 @@ namespace GameLab3
             }
             
             objects.Add(newObj);
+
+            // событие добавления объекта, а не canvas.Children.Add(...)
+            addObject?.Invoke(this, new CControllerEventArgs(newObj.getSprite()));
             return newObj;
         }
 
-        public void update(double delta, Canvas canvas)
+        private void destroyObject(CCollectable o, string message)
+        {
+            CControllerEventArgs e = new CControllerEventArgs(o.getSprite());
+            e.msg = message;
+            removeObject?.Invoke(this, e);
+            objects.Remove(o);
+        }
+
+        public void clear()
+        {
+            for (int i = objects.Count - 1; i >= 0; i--)
+            {
+                destroyObject(objects[i], "");
+            }
+        }
+
+        public void restart(Size sceneSize)
+        {
+            clear();
+            this.sceneSize = sceneSize;
+            time = 0;
+            points = 0;
+            minLifetime = 1;
+        }
+
+        public void update(double delta)
         {
             time += delta;
             if (time >= spawnRate)
             {
                 time = 0;
-                CCollectable newObj = spawnObject();
-                canvas.Children.Add(newObj.getSprite());
+                spawnObject();
             }
 
             for (int i = objects.Count - 1; i >= 0; i--)
             {
                 if (objects[i].updateLifetime(delta))
                 {
-                    canvas.Children.Remove(objects[i].getSprite());
-                    objects.RemoveAt(i);
+                    destroyObject(objects[i], "");
                 }
             }
         }
-        public void mouseClick(Point mousePosition, Canvas canvas, CPlayer player)
+
+        public void mouseClick(Point mousePosition, CPlayer player)
         {
             for (int i = objects.Count - 1; i >= 0; i--)
             {
                 if (objects[i].onClick(player, this, mousePosition) == true)
                 {
-                    canvas.Children.Remove(objects[i].getSprite());
-                    objects.RemoveAt(i); 
+                    destroyObject(objects[i], "");
                     break;
                 }
             }
