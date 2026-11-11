@@ -8,8 +8,24 @@ using System.Windows.Shapes;
 
 namespace GameLab3
 {
+    public delegate void SceneEvent(object sender, CControllerEventArgs e);
+
+    public class CControllerEventArgs : EventArgs
+    {
+        public Ellipse sprite;
+        public string msg = "";
+
+        public CControllerEventArgs(Ellipse sprite)
+        {
+            this.sprite = sprite;
+        }
+    }
+
     public class CController
     {
+        public event SceneEvent addObject;
+        public event SceneEvent removeObject;
+
         private List<CCollectable> objects;
         private double spawnRate;
         private double time;
@@ -64,36 +80,67 @@ namespace GameLab3
             }
             
             objects.Add(newObj);
+
+            // событие добавления объекта, а не canvas.Children.Add(...)
+            addObject?.Invoke(this, new CControllerEventArgs(newObj.getSprite()));
             return newObj;
         }
 
-        public void update(double delta, Canvas canvas)
+        private void destroyObject(CCollectable o, string message)
+        {
+            CControllerEventArgs e = new CControllerEventArgs(o.getSprite());
+            e.msg = message;
+            removeObject?.Invoke(this, e);
+            objects.Remove(o);
+        }
+
+        public void clear()
+        {
+            for (int i = objects.Count - 1; i >= 0; i--)
+            {
+                destroyObject(objects[i], "");
+            }
+        }
+
+        public void restart(Size sceneSize)
+        {
+            clear();
+            this.sceneSize = sceneSize;
+            time = 0;
+            points = 0;
+            minLifetime = 1;
+        }
+
+        public void update(double delta)
         {
             time += delta;
             if (time >= spawnRate)
             {
                 time = 0;
-                CCollectable newObj = spawnObject();
-                canvas.Children.Add(newObj.getSprite());
+                spawnObject();
             }
 
             for (int i = objects.Count - 1; i >= 0; i--)
             {
                 if (objects[i].updateLifetime(delta))
                 {
-                    canvas.Children.Remove(objects[i].getSprite());
-                    objects.RemoveAt(i);
+                    destroyObject(objects[i], "");
                 }
             }
         }
-        public void mouseClick(Point mousePosition, Canvas canvas, CPlayer player)
+
+        public void mouseClick(Point mousePosition, CPlayer player)
         {
             for (int i = objects.Count - 1; i >= 0; i--)
             {
+                double oldPoints = points;
                 if (objects[i].onClick(player, this, mousePosition) == true)
                 {
-                    canvas.Children.Remove(objects[i].getSprite());
-                    objects.RemoveAt(i); 
+                    string message = "";
+                    if (points > oldPoints)
+                        message = $"Получено очков: {points - oldPoints:F0}";
+
+                    destroyObject(objects[i], message);
                     break;
                 }
             }
